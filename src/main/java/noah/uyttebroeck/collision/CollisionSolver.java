@@ -43,7 +43,6 @@ public class CollisionSolver {
 
             ArrayList<Collider> collided = new ArrayList<>();
             ArrayList<Collider> results = quadTree.query(range);
-            System.out.println(results.size());
             for (Collider c : results) {
                 if (pc != c && collides(pc, c)) {
                     collided.add(c);

@@ -29,7 +29,7 @@ public class Sprite extends Component {
         g.drawRect(parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), 4, 4);
         g.setColor(color);
         g.drawRect(parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), parent.getSize().x.intValue(), parent.getSize().y.intValue());
-        g.drawImage(image, parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), window);
+        g.drawImage(image, parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), null);
     }
 
     public void setColor(Color color) {
