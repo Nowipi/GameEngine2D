@@ -14,7 +14,7 @@ public class Tile extends Entity {
     public Tile(Vec2F position, Window window) {
         super(position, new Vec2F());
 
-        sprite = new Sprite("tile.png", window, this);
+        sprite = new Sprite("textures/tile.png", window, this);
         sprite.setSize(VectorMath.scalarMultiply(sprite.getSize(), 2.5F));
         components.add(sprite);
         setSize(sprite.getSize());

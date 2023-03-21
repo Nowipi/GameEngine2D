@@ -17,7 +17,7 @@ public class Player extends Entity {
 
     public Player(Vec2F position, Window window) {
         super(position, new Vec2F());
-        sprite = new Sprite("player.png", window, this);
+        sprite = new Sprite("textures/player.png", window, this);
         sprite.setSize(VectorMath.scalarMultiply(sprite.getSize(), 2.5F));
         components.add(sprite);
         setSize(sprite.getSize());

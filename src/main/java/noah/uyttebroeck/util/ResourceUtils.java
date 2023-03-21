@@ -5,8 +5,22 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Scanner;
 
 public class ResourceUtils {
+
+    public static String getFileContent(String file) {
+        InputStream inputStream = ResourceUtils.class.getClassLoader().getResourceAsStream(file);
+        if (inputStream != null) {
+            StringBuilder content = new StringBuilder();
+            Scanner scanner = new Scanner(inputStream);
+            while (scanner.hasNextLine()) {
+                content.append(scanner.nextLine()).append('\n');
+            }
+            return content.toString();
+        }
+        throw new RuntimeException("file not found: " + file);
+    }
 
     public static BufferedImage getImage(String filename) {
         try {
