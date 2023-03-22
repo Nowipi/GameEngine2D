@@ -19,11 +19,13 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class DefaultGraphics implements Graphics {
 
-    private final Shader shader;
+    private final Shader spriteShader;
+    private final Shader shapeShader;
     private final int quadVAO;
 
-    public DefaultGraphics(Shader shader) {
-        this.shader = shader;
+    public DefaultGraphics(Shader spriteShader, Shader shapeShader) {
+        this.spriteShader = spriteShader;
+        this.shapeShader = shapeShader;
 
         int VBO;
         float[] vertices = {
@@ -58,22 +60,25 @@ public class DefaultGraphics implements Graphics {
     @Override
     public void drawRect(Vec2<Float> position, Vec2<Float> size) {
 
-        float[] vertices = {
-                position.x + size.x, position.y + size.y, // top right
-                position.x + size.x, position.y,          // bottom right
-                position.x, position.y,                   // bottom left
-                position.x, position.y + size.y           // top left
-        };
-        int[] indices = {  // note that we start from 0!
-                0, 1, 3,  // first Triangle
-                1, 2, 3   // second Triangle
-        };
-       meshes.add(new Mesh(vertices, indices));
+        shapeShader.bind();
+
+        Matrix4f model = new Matrix4f();
+        model
+                .translate(position.x, position.y, 0)
+                .scale(size.x, size.y, 1);
+
+        shapeShader.setMatrix4f("model", model);
+        shapeShader.setVector3f("shapeColor", new Vector3f(1,0,0));
+
+
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
     }
 
     @Override
     public void drawSprite(Sprite sprite) {
-        shader.bind();
+        spriteShader.bind();
         Matrix4f model = new Matrix4f();
         Vec2F pos = sprite.getParent().getPosition();
         Vec2F size = sprite.getParent().getSize();
@@ -84,8 +89,8 @@ public class DefaultGraphics implements Graphics {
                 .translate(-0.5F * sprite.getSize().x, -0.5F * sprite.getSize().y, 0)
                 .scale(size.x, size.y, 1);
 
-        shader.setMatrix4f("model", model);
-        shader.setVector3f("spriteColor", sprite.getColor());
+        spriteShader.setMatrix4f("model", model);
+        spriteShader.setVector3f("spriteColor", sprite.getColor());
 
         glActiveTexture(GL_TEXTURE0);
         sprite.getTexture().bind();
@@ -93,10 +98,5 @@ public class DefaultGraphics implements Graphics {
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
-    }
-
-    @Override
-    public void drawImage() {
-
     }
 }

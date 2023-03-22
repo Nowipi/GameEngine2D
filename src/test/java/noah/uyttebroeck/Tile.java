@@ -5,7 +5,6 @@ import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
 import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
-import noah.uyttebroeck.util.VectorMath;
 
 public class Tile extends Entity {
 
@@ -15,7 +14,7 @@ public class Tile extends Entity {
     public Tile(Vec2F position) {
         super(position, new Vec2F());
 
-        sprite = new Sprite("textures/tile.png", this);
+        sprite = new Sprite("textures/tile.png", 32, 32, this);
         components.add(sprite);
         setSize(sprite.getSize());
         collider = new Collider(size, this);

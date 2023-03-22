@@ -12,8 +12,7 @@ import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.*;
 
 public class ResourceUtils {
 
@@ -32,16 +31,19 @@ public class ResourceUtils {
 
     public static Texture getTextureFromFile(String file) {
         // load image
-        int[] width = new int[1];
-        int[] height = new int[1];
+        int[] imageWidth = new int[1];
+        int[] imageHeight = new int[1];
         int[] nrChannels = new int[1];
-        ByteBuffer data = stbi_load("src/main/resources/" + file, width, height, nrChannels, 0);
+        ByteBuffer data = stbi_load("src/main/resources/" + file, imageWidth, imageHeight, nrChannels, 0);
+
+        if (data == null)
+            throw new RuntimeException(stbi_failure_reason());
 
         Texture texture;
         if (nrChannels[0] > 3) {
-            texture = new Texture(width[0], height[0], GL_RGBA, GL_RGBA, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);
+            texture = new Texture(imageWidth[0], imageHeight[0], GL_RGBA, GL_RGBA, GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_NEAREST);
         } else {
-            texture = new Texture(width[0], height[0]);
+            texture = new Texture(imageWidth[0], imageHeight[0]);
         }
         // now generate texture
         texture.generate(data);

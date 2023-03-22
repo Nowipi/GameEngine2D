@@ -6,10 +6,7 @@ import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
 import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
-import noah.uyttebroeck.util.VectorMath;
 import org.joml.Vector3f;
-
-import java.awt.*;
 
 public class Player extends Entity {
 
@@ -19,7 +16,7 @@ public class Player extends Entity {
 
     public Player(Vec2F position) {
         super(position, new Vec2F());
-        sprite = new Sprite("textures/player.png", this);
+        sprite = new Sprite("textures/player.png", 64, 64, this);
         components.add(sprite);
         setSize(sprite.getSize());
 
@@ -52,7 +49,7 @@ public class Player extends Entity {
     @Override
     public void onUpdate(double delta) {
 
-        double inc = 10 * delta;
+        double inc = 100 * delta;
         position.x += (float)inc;
     }
 

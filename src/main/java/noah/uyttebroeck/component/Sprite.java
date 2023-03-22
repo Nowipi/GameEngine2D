@@ -12,9 +12,13 @@ public class Sprite extends Component {
     private final Texture texture;
 
     private Vector3f color = new Vector3f(1, 1, 1);
+    private final int width;
+    private final int height;
 
-    public Sprite(String imageName,  Entity parent) {
+    public Sprite(String imageName, int width, int height, Entity parent) {
         super(new ComponentBuilder(parent).ticks(true));
+        this.width = width;
+        this.height = height;
         texture = ResourceUtils.getTextureFromFile(imageName);
     }
 
@@ -32,7 +36,7 @@ public class Sprite extends Component {
     }
 
     public Vec2F getSize() {
-        return new Vec2F(texture.getWidth(), texture.getHeight());
+        return new Vec2F(width, height);
     }
 
     public Texture getTexture() {

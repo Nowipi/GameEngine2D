@@ -9,7 +9,7 @@ import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Game extends Window {
 
@@ -23,20 +23,23 @@ public class Game extends Window {
 
     @Override
     protected void onInit() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         CollisionSolver.initialize(width, height);
-        Shader shader = new Shader("shaders/default.vert", "shaders/default.frag");
-        shader.bind();
+        Shader spriteShader = new Shader("shaders/sprite.vert", "shaders/sprite.frag");
+        spriteShader.bind();
         Matrix4f projection = new Matrix4f().ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
-        shader.setMatrix4f("projection", projection);
-        shader.setInteger("image", 0);
-        graphics = new DefaultGraphics(shader);
+        spriteShader.setMatrix4f("projection", projection);
+        spriteShader.setInteger("image", 0);
+        Shader shapeShader = new Shader("shaders/shape.vert", "shaders/shape.frag");
+        shapeShader.bind();
+        shapeShader.setMatrix4f("projection", projection);
+        graphics = new DefaultGraphics(spriteShader, shapeShader);
 
         Player player = new Player(new Vec2F(10, 10));
         entities = new ArrayList<>();
         entities.add(player);
-        entities.add(new Tile(new Vec2F(100, 10)));
-
-        //graphics.drawRect(new Vec2F(0, 0), new Vec2F(10, 10));
+        entities.add(new Tile(new Vec2F(200, 10)));
     }
 
     @Override
@@ -52,6 +55,7 @@ public class Game extends Window {
 
     @Override
     protected void onRender() {
+
         for (Entity e : entities) {
             e.render(graphics);
         }
