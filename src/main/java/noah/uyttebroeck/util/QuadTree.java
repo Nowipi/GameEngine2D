@@ -105,6 +105,9 @@ public abstract class QuadTree <E> {
 
     public ArrayList<E> query(Rectangle range, ArrayList<E> found) {
 
+        if (found == null)
+            return new ArrayList<>();
+
         if(!range.intersects(boundary)) {
             return found;
         }

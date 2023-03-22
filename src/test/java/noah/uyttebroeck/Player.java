@@ -4,14 +4,14 @@ import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.collision.OnCollision;
 import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
-import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
-import org.joml.Vector3f;
+import noah.uyttebroeck.util.VectorMath;
 
 public class Player extends Entity {
 
     private final Sprite sprite;
     private final Collider collider;
+    private Vec2F velocity = new Vec2F(100, 20);
 
 
     public Player(Vec2F position) {
@@ -27,20 +27,12 @@ public class Player extends Entity {
 
             @Override
             public void collisionEntered(Collider other) {
-                System.out.println("entered");
-                sprite.setColor(new Vector3f(1,0,0));
-                if (other.getParent() instanceof Tile t) {
-                    t.getSprite().setColor(new Vector3f(1,0,0));
-                }
+                if (!(other.getParent() instanceof Player))
+                    velocity.x *= -1;
             }
 
             @Override
             public void collisionExited(Collider other) {
-                System.out.println("exited");
-                sprite.setColor(new Vector3f(1,1,1));
-                if (other.getParent() instanceof Tile t) {
-                    t.getSprite().setColor(new Vector3f(1,1,1));
-                }
             }
         });
         components.add(collider);
@@ -48,14 +40,9 @@ public class Player extends Entity {
 
     @Override
     public void onUpdate(double delta) {
+        position = VectorMath.add(position, VectorMath.scalarMultiply(velocity, (float) delta));
 
-        double inc = 100 * delta;
-        position.x += (float)inc;
-    }
-
-    @Override
-    public void onRender(Graphics graphics) {
-
+        Game.graphics.drawRect(position, size);
     }
 
 

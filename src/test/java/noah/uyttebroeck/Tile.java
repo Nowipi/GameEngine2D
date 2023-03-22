@@ -26,11 +26,6 @@ public class Tile extends Entity {
 
     }
 
-    @Override
-    public void onRender(Graphics graphics) {
-
-    }
-
     public Sprite getSprite() {
         return sprite;
     }

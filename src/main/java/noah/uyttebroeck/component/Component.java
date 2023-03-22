@@ -16,7 +16,6 @@ public class Component {
     }
 
     public void update(double delta){}
-    public void render(Graphics graphics){}
 
     public final boolean ticks() {
         return ticks;

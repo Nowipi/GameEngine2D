@@ -11,4 +11,6 @@ public interface Graphics {
 
     void drawSprite(Sprite sprite);
 
+    void render();
+
 }

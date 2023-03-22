@@ -1,7 +1,7 @@
 package noah.uyttebroeck.component;
 
+import noah.uyttebroeck.Game;
 import noah.uyttebroeck.entity.Entity;
-import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.graphics.Texture;
 import noah.uyttebroeck.util.ResourceUtils;
 import noah.uyttebroeck.util.Vec2F;
@@ -23,8 +23,8 @@ public class Sprite extends Component {
     }
 
     @Override
-    public void render(Graphics graphics) {
-        graphics.drawSprite(this);
+    public void update(double delta) {
+        Game.graphics.drawSprite(this);
     }
 
     public void setColor(Vector3f color) {

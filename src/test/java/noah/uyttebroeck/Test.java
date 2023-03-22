@@ -17,9 +17,4 @@ public class Test extends Entity {
     public void onUpdate(double delta) {
 
     }
-
-    @Override
-    public void onRender(Graphics graphics) {
-
-    }
 }

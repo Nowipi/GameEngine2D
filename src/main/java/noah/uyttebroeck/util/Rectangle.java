@@ -13,20 +13,21 @@ public class Rectangle {
     public Rectangle(Vec2F position, Vec2F size) {
         this.position = position;
         this.size = size;
-        left    = this.position.x - this.size.x / 2;
-        right   = this.position.x + this.size.x / 2;
-        top     = this.position.y - this.size.y / 2;
-        bottom  = this.position.y + this.size.y / 2;
+        left    = this.position.x;
+        right   = this.position.x + this.size.x;
+        top     = this.position.y;
+        bottom  = this.position.y + this.size.y;
     }
 
     public boolean contains(Vec2F point) {
-        return left <= point.x && point.x <= right &&
-                top <= point.y && point.y <= bottom;
+
+        return point.x >= left && point.x <= right &&
+                point.y >= top && point.y <= bottom;
     }
 
     public boolean intersects(Rectangle range) {
-        return !(right < range.left || range.right < left ||
-                bottom < range.top || range.bottom < top);
+        return right >= range.left && left <= range.right &&
+                bottom >= range.top && top <= range.bottom;
     }
 
     public Rectangle subdivide(String quadrant) {

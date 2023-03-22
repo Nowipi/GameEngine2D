@@ -1,10 +1,8 @@
 package noah.uyttebroeck.entity;
 
 import noah.uyttebroeck.component.Component;
-import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Entity {
@@ -31,17 +29,7 @@ public abstract class Entity {
         onUpdate(delta);
     }
 
-    public final void render(Graphics graphics) {
-
-        for (Component component : components) {
-            component.render(graphics);
-        }
-
-        onRender(graphics);
-    }
-
     public abstract void onUpdate(double delta);
-    public abstract void onRender(Graphics graphics);
 
     public final Vec2F getPosition() {
         return position;

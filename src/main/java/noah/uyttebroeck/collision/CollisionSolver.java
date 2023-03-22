@@ -1,5 +1,6 @@
 package noah.uyttebroeck.collision;
 
+import noah.uyttebroeck.Game;
 import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.util.QuadTree;
 import noah.uyttebroeck.util.Rectangle;
@@ -34,12 +35,11 @@ public class CollisionSolver {
     public void update() {
         for (Collider pc : quadTree.elements) {
 
-
             float add = 50;
             Vec2F additional = new Vec2F(add);
             Rectangle range = new Rectangle(
-                    VectorMath.clampMin(VectorMath.sub(pc.getPosition(), additional), new Vec2F(0,0)),
-                    VectorMath.add(pc.getSize(), additional));
+                    VectorMath.sub(pc.getPosition(), additional),
+                    VectorMath.add(pc.getSize(), VectorMath.scalarMultiply(additional, 2)));
 
             ArrayList<Collider> collided = new ArrayList<>();
             ArrayList<Collider> results = quadTree.query(range);

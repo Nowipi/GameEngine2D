@@ -2,6 +2,7 @@ package noah.uyttebroeck;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
@@ -60,6 +61,14 @@ public abstract class Window {
             public void invoke(long window, int width, int height) {
                 Window.this.width = width;
                 Window.this.height = height;
+            }
+        });
+
+        glfwSetMouseButtonCallback(window, new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                if (action == GLFW_RELEASE)
+                    click();
             }
         });
 
@@ -136,6 +145,7 @@ public abstract class Window {
     protected abstract void onInit();
     protected abstract void onUpdate(double delta);
     protected abstract void onRender();
+    protected abstract void click();
 
     public int getWidth() {
         return width;
