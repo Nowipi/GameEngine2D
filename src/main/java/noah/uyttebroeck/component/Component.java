@@ -1,6 +1,7 @@
 package noah.uyttebroeck.component;
 
 import noah.uyttebroeck.entity.Entity;
+import noah.uyttebroeck.graphics.Graphics;
 
 import java.awt.*;
 
@@ -14,8 +15,8 @@ public class Component {
         parent = builder.parent;
     }
 
-    public void update(){}
-    public void draw(Graphics2D g){}
+    public void update(double delta){}
+    public void render(Graphics graphics){}
 
     public final boolean ticks() {
         return ticks;

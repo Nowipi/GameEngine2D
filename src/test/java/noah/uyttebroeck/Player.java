@@ -4,8 +4,10 @@ import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.collision.OnCollision;
 import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
+import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
 import noah.uyttebroeck.util.VectorMath;
+import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -15,10 +17,9 @@ public class Player extends Entity {
     private final Collider collider;
 
 
-    public Player(Vec2F position, Window window) {
+    public Player(Vec2F position) {
         super(position, new Vec2F());
-        sprite = new Sprite("textures/player.png", window, this);
-        sprite.setSize(VectorMath.scalarMultiply(sprite.getSize(), 2.5F));
+        sprite = new Sprite("textures/player.png", this);
         components.add(sprite);
         setSize(sprite.getSize());
 
@@ -30,18 +31,18 @@ public class Player extends Entity {
             @Override
             public void collisionEntered(Collider other) {
                 System.out.println("entered");
-                sprite.setColor(Color.RED);
+                sprite.setColor(new Vector3f(1,0,0));
                 if (other.getParent() instanceof Tile t) {
-                    t.getSprite().setColor(Color.RED);
+                    t.getSprite().setColor(new Vector3f(1,0,0));
                 }
             }
 
             @Override
             public void collisionExited(Collider other) {
                 System.out.println("exited");
-                sprite.setColor(Color.WHITE);
+                sprite.setColor(new Vector3f(1,1,1));
                 if (other.getParent() instanceof Tile t) {
-                    t.getSprite().setColor(Color.WHITE);
+                    t.getSprite().setColor(new Vector3f(1,1,1));
                 }
             }
         });
@@ -49,8 +50,15 @@ public class Player extends Entity {
     }
 
     @Override
-    public void onUpdate() {
-        position = new Vec2F(position.x+1, position.y);
+    public void onUpdate(double delta) {
+
+        double inc = 10 * delta;
+        position.x += (float)inc;
+    }
+
+    @Override
+    public void onRender(Graphics graphics) {
+
     }
 
 

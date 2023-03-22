@@ -19,6 +19,8 @@ public class Mesh {
         int VBO = glGenBuffers();
         int EBO = glGenBuffers();
 
+        glBindVertexArray(VAO);
+
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 

@@ -1,11 +1,19 @@
 package noah.uyttebroeck.util;
 
+import noah.uyttebroeck.graphics.Texture;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Scanner;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class ResourceUtils {
 
@@ -22,23 +30,24 @@ public class ResourceUtils {
         throw new RuntimeException("file not found: " + file);
     }
 
-    public static BufferedImage getImage(String filename) {
-        try {
-            InputStream inputStream = ResourceUtils.class.getClassLoader().getResourceAsStream(filename);
-            if (inputStream != null)
-                return ImageIO.read(inputStream);
-            throw new RuntimeException("file not found: " + filename);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public static Texture getTextureFromFile(String file) {
+        // load image
+        int[] width = new int[1];
+        int[] height = new int[1];
+        int[] nrChannels = new int[1];
+        ByteBuffer data = stbi_load("src/main/resources/" + file, width, height, nrChannels, 0);
 
-    public static BufferedImage imageToBufferedImage(Image image) {
-        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = bufferedImage.createGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return bufferedImage;
+        Texture texture;
+        if (nrChannels[0] > 3) {
+            texture = new Texture(width[0], height[0], GL_RGBA, GL_RGBA, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);
+        } else {
+            texture = new Texture(width[0], height[0]);
+        }
+        // now generate texture
+        texture.generate(data);
+        // and finally free image data
+        stbi_image_free(data);
+        return texture;
     }
 
 }

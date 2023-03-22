@@ -1,52 +1,41 @@
 package noah.uyttebroeck.component;
 
 import noah.uyttebroeck.entity.Entity;
-import noah.uyttebroeck.Window;
+import noah.uyttebroeck.graphics.Graphics;
+import noah.uyttebroeck.graphics.Texture;
 import noah.uyttebroeck.util.ResourceUtils;
 import noah.uyttebroeck.util.Vec2F;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import org.joml.Vector3f;
 
 public class Sprite extends Component {
 
-    private BufferedImage image;
+    private final Texture texture;
 
-    private final noah.uyttebroeck.Window window;
+    private Vector3f color = new Vector3f(1, 1, 1);
 
-    private Color color = Color.WHITE;
-
-    public Sprite(String imageName, Window window, Entity parent) {
+    public Sprite(String imageName,  Entity parent) {
         super(new ComponentBuilder(parent).ticks(true));
-        this.window = window;
-        this.image = ResourceUtils.getImage(imageName);
+        texture = ResourceUtils.getTextureFromFile(imageName);
     }
 
     @Override
-    public void draw(Graphics2D g) {
-        g.setColor(Color.PINK);
-        g.drawRect(parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), 4, 4);
-        g.setColor(color);
-        g.drawRect(parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), parent.getSize().x.intValue(), parent.getSize().y.intValue());
-        g.drawImage(image, parent.getPosition().x.intValue(), parent.getPosition().y.intValue(), null);
+    public void render(Graphics graphics) {
+        graphics.drawSprite(this);
     }
 
-    public void setColor(Color color) {
+    public void setColor(Vector3f color) {
         this.color = color;
     }
 
-    public Color getColor() {
+    public Vector3f getColor() {
         return color;
     }
 
     public Vec2F getSize() {
-        return new Vec2F(image.getWidth(), image.getHeight());
+        return new Vec2F(texture.getWidth(), texture.getHeight());
     }
 
-    public void setSize(Vec2F size) {
-        image = ResourceUtils.imageToBufferedImage(
-                image.getScaledInstance(size.x.intValue(), size.y.intValue(), Image.SCALE_DEFAULT)
-        );
+    public Texture getTexture() {
+        return texture;
     }
 }

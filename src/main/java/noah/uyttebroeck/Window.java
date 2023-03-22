@@ -40,6 +40,9 @@ public abstract class Window {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         // Create the window
         window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -87,6 +90,13 @@ public abstract class Window {
         // Make the window visible
         glfwShowWindow(window);
 
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+
         onInit();
 
         loop();
@@ -101,34 +111,31 @@ public abstract class Window {
     }
 
     private void loop() {
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
-        GL.createCapabilities();
-
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+
+        double lastTime = 0.0;
         while (!glfwWindowShouldClose(window)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glfwSwapBuffers(window); // swap the color buffers
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
+            double currentTime = glfwGetTime();
+            double delta = currentTime - lastTime;
+            lastTime = currentTime;
             glfwPollEvents();
 
-            onUpdate();
+            onUpdate(delta);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            onRender();
+
+            glfwSwapBuffers(window); // swap the color buffers
         }
 
     }
 
     protected abstract void onInit();
-    protected abstract void onUpdate();
+    protected abstract void onUpdate(double delta);
+    protected abstract void onRender();
 
     public int getWidth() {
         return width;
