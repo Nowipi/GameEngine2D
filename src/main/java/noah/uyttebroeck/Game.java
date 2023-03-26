@@ -11,12 +11,14 @@ import static org.lwjgl.opengl.GL11.*;
 
 public abstract class Game extends Window {
 
+    private static Game INSTANCE;
+
     protected ArrayList<Entity> entities;
 
     public static Graphics graphics;
 
-    public Game() {
-        super("Test window", 1024, 560);
+    protected Game(String title, int width, int height) {
+        super(title, width, height);
     }
 
     @Override
@@ -41,5 +43,16 @@ public abstract class Game extends Window {
     @Override
     protected void onRender() {
         graphics.render();
+    }
+
+    public static <G extends Game> void initialize(G game) {
+        if (INSTANCE != null)
+            throw new RuntimeException("can't initialize a game that's already running");
+        INSTANCE = game;
+        game.start();
+    }
+
+    public static Game getInstance() {
+        return INSTANCE;
     }
 }

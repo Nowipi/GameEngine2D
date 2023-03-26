@@ -2,16 +2,11 @@ package noah.uyttebroeck.util;
 
 import noah.uyttebroeck.graphics.Texture;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.stb.STBImage.*;
 
 public class ResourceUtils {

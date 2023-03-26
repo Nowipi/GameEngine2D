@@ -7,6 +7,8 @@ import noah.uyttebroeck.entity.Entity;
 import noah.uyttebroeck.util.Vec2F;
 import noah.uyttebroeck.util.VectorMath;
 
+import java.util.ArrayList;
+
 public class Player extends Entity {
 
     private final Sprite sprite;
@@ -27,8 +29,7 @@ public class Player extends Entity {
 
             @Override
             public void collisionEntered(Collider other) {
-                if (!(other.getParent() instanceof Player))
-                    velocity.x *= -1;
+                velocity.x *= -1;
             }
 
             @Override

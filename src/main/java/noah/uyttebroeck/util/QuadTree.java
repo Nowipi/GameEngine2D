@@ -11,7 +11,7 @@ public abstract class QuadTree <E> {
     public final Rectangle boundary;
     private final int capacity;
     private final int depth;
-    public ArrayList<E> elements = new ArrayList<>();
+    private final ArrayList<E> elements = new ArrayList<>();
     private boolean divided = false;
 
     public QuadTree<E> NE;
@@ -37,34 +37,62 @@ public abstract class QuadTree <E> {
         this.depth = depth;
     }
 
+    public enum Quadrant {
+        NE,
+        NW,
+        SE,
+        SW
+    }
+
     public void subdivide() {
-        NE = new QuadTree<>(boundary.subdivide("ne"), capacity, depth + 1) {
+        NE = new QuadTree<>(boundary.subdivide(Quadrant.NE), capacity, depth + 1) {
             @Override
             public Vec2F getPosition(E element) {
                 return QuadTree.this.getPosition(element);
             }
+
+            @Override
+            public Vec2F getSize(E element) {
+                return QuadTree.this.getSize(element);
+            }
         };
-        NW = new QuadTree<>(boundary.subdivide("nw"), capacity, depth + 1) {
+        NW = new QuadTree<>(boundary.subdivide(Quadrant.NW), capacity, depth + 1) {
             @Override
             public Vec2F getPosition(E element) {
                 return QuadTree.this.getPosition(element);
             }
+
+            @Override
+            public Vec2F getSize(E element) {
+                return QuadTree.this.getSize(element);
+            }
         };
-        SE = new QuadTree<>(boundary.subdivide("se"), capacity, depth + 1) {
+        SE = new QuadTree<>(boundary.subdivide(Quadrant.SE), capacity, depth + 1) {
             @Override
             public Vec2F getPosition(E element) {
                 return QuadTree.this.getPosition(element);
             }
+
+            @Override
+            public Vec2F getSize(E element) {
+                return QuadTree.this.getSize(element);
+            }
         };
-        SW = new QuadTree<>(boundary.subdivide("sw"), capacity, depth + 1) {
+        SW = new QuadTree<>(boundary.subdivide(Quadrant.SW), capacity, depth + 1) {
             @Override
             public Vec2F getPosition(E element) {
                 return QuadTree.this.getPosition(element);
+            }
+
+            @Override
+            public Vec2F getSize(E element) {
+                return QuadTree.this.getSize(element);
             }
         };
 
         divided = true;
 
+        //insert old elements
         for (E e : elements) {
             boolean inserted =
                     NE.insert(e) ||
@@ -82,7 +110,7 @@ public abstract class QuadTree <E> {
     }
 
     public boolean insert(E e) {
-        if (!boundary.contains(getPosition(e))) {
+        if (!boundary.intersects(new Rectangle(getPosition(e), getSize(e)))) {
             return false;
         }
 
@@ -103,10 +131,7 @@ public abstract class QuadTree <E> {
         return query(range, new ArrayList<>());
     }
 
-    public ArrayList<E> query(Rectangle range, ArrayList<E> found) {
-
-        if (found == null)
-            return new ArrayList<>();
+    private ArrayList<E> query(Rectangle range, ArrayList<E> found) {
 
         if(!range.intersects(boundary)) {
             return found;
@@ -121,7 +146,7 @@ public abstract class QuadTree <E> {
         }
 
         for (E e : elements) {
-            if (range.contains(getPosition(e))) {
+            if (range.intersects(new Rectangle(getPosition(e), getSize(e)))) {
                 found.add(e);
             }
         }
@@ -129,9 +154,21 @@ public abstract class QuadTree <E> {
         return found;
     }
 
+    public ArrayList<E> getElements() {
+        ArrayList<E> elements = this.elements;
+        if (isDivided()) {
+            elements.addAll(NE.getElements());
+            elements.addAll(NW.getElements());
+            elements.addAll(SE.getElements());
+            elements.addAll(SW.getElements());
+        }
+        return elements;
+    }
+
     public boolean isDivided() {
         return divided;
     }
 
     public abstract Vec2F getPosition(E element);
+    public abstract Vec2F getSize(E element);
 }

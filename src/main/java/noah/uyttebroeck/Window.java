@@ -105,7 +105,9 @@ public abstract class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+    }
 
+    public void start() {
         onInit();
 
         loop();

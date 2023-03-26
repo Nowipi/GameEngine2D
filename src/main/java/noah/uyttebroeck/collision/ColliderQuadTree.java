@@ -15,5 +15,10 @@ public class ColliderQuadTree extends QuadTree<Collider> {
         return element.getPosition();
     }
 
+    @Override
+    public Vec2F getSize(Collider element) {
+        return element.getSize();
+    }
+
 
 }

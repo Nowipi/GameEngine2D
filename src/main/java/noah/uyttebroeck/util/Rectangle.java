@@ -19,7 +19,7 @@ public class Rectangle {
         bottom  = this.position.y + this.size.y;
     }
 
-    public boolean contains(Vec2F point) {
+    public boolean contains(Vec2F point, Vec2F size) {
 
         return point.x >= left && point.x <= right &&
                 point.y >= top && point.y <= bottom;
@@ -30,17 +30,13 @@ public class Rectangle {
                 bottom >= range.top && top <= range.bottom;
     }
 
-    public Rectangle subdivide(String quadrant) {
-        Vec2F divided = VectorMath.scalarDivide(size, 4);
+    public Rectangle subdivide(QuadTree.Quadrant quadrant) {
         Vec2F half = VectorMath.scalarDivide(size, 2);
-        Vec2F added = VectorMath.add(position, divided);
-        Vec2F subtracted = VectorMath.sub(position, divided);
         return switch (quadrant) {
-            case "ne" -> new Rectangle(new Vec2F(added.x, subtracted.y), half);
-            case "nw" -> new Rectangle(subtracted, half);
-            case "se" -> new Rectangle(added, half);
-            case "sw" -> new Rectangle(new Vec2F(subtracted.x, added.y), half);
-            default -> null;
+            case NE -> new Rectangle(new Vec2F(position.x + half.x, position.y), half);
+            case NW -> new Rectangle(new Vec2F(position.x, position.y), half);
+            case SE -> new Rectangle(new Vec2F(position.x + half.x, position.y + half.y), half);
+            case SW -> new Rectangle(new Vec2F(position.x, position.y + half.y), half);
         };
     }
 }
