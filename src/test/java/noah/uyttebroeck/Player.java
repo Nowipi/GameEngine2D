@@ -1,13 +1,11 @@
 package noah.uyttebroeck;
 
-import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.collision.OnCollision;
+import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
 import noah.uyttebroeck.util.Vec2F;
 import noah.uyttebroeck.util.VectorMath;
-
-import java.util.ArrayList;
 
 public class Player extends Entity {
 
@@ -34,17 +32,22 @@ public class Player extends Entity {
 
             @Override
             public void collisionExited(Collider other) {
+
             }
         });
         components.add(collider);
     }
 
+
+
     @Override
     public void onUpdate(double delta) {
         position = VectorMath.add(position, VectorMath.scalarMultiply(velocity, (float) delta));
 
-        Game.graphics.drawRect(position, size);
+        Game.graphics.drawRect(collider.getPosition(), collider.getSize());
     }
 
-
+    public Collider getCollider() {
+        return collider;
+    }
 }

@@ -67,8 +67,11 @@ public abstract class Window {
         glfwSetMouseButtonCallback(window, new GLFWMouseButtonCallback() {
             @Override
             public void invoke(long window, int button, int action, int mods) {
+                double[] x = new double[1];
+                double[] y = new double[1];
+                glfwGetCursorPos(window, x, y);
                 if (action == GLFW_RELEASE)
-                    click();
+                    click((int) x[0], (int) y[0]);
             }
         });
 
@@ -147,7 +150,7 @@ public abstract class Window {
     protected abstract void onInit();
     protected abstract void onUpdate(double delta);
     protected abstract void onRender();
-    protected abstract void click();
+    protected abstract void click(int x, int y);
 
     public int getWidth() {
         return width;

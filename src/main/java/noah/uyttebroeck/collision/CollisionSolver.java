@@ -31,6 +31,7 @@ public class CollisionSolver {
     public void addCollider(Collider collider) {
         colliders.add(collider);
         quadTree.insert(collider);
+        update();
     }
 
     public void update() {
@@ -81,4 +82,8 @@ public class CollisionSolver {
     }
 
 
+    public void removeCollider(Collider collider) {
+        colliders.remove(collider);
+        update();
+    }
 }

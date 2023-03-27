@@ -12,6 +12,7 @@ public abstract class Entity {
     protected Vec2F position;
     protected Vec2F size;
     protected float rotation;
+    private boolean destructed = false;
 
     public Entity(Vec2F position, Vec2F size) {
         this.position = position;
@@ -27,6 +28,13 @@ public abstract class Entity {
         }
 
         onUpdate(delta);
+    }
+
+    public void destruct() {
+        destructed = true;
+        for (Component c : components) {
+            c.destruct();
+        }
     }
 
     public abstract void onUpdate(double delta);
@@ -53,5 +61,9 @@ public abstract class Entity {
 
     public void setRotation(float rotation) {
         this.rotation = rotation;
+    }
+
+    public boolean isDestructed() {
+        return destructed;
     }
 }

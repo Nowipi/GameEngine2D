@@ -21,6 +21,10 @@ public abstract class Game extends Window {
         super(title, width, height);
     }
 
+    public boolean isSpawned(Entity parent) {
+        return entities.contains(parent);
+    }
+
     @Override
     protected void onInit() {
         glEnable(GL_BLEND);

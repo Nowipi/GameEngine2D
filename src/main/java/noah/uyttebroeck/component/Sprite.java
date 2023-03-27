@@ -27,6 +27,11 @@ public class Sprite extends Component {
         Game.graphics.drawSprite(this);
     }
 
+    @Override
+    public void destruct() {
+
+    }
+
     public void setColor(Vector3f color) {
         this.color = color;
     }

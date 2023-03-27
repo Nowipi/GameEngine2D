@@ -1,5 +1,7 @@
 package noah.uyttebroeck;
 
+import noah.uyttebroeck.collision.CollisionSolver;
+import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.util.Vec2F;
 
 import java.util.ArrayList;
@@ -31,8 +33,15 @@ public class MyGame extends Game {
     }
 
     @Override
-    protected void click() {
-        entities.add(new Player(new Vec2F(random.nextInt(width), random.nextInt(height))));
+    protected void click(int x, int y) {
+        Player player = new Player(new Vec2F(x, y));
+        if (!player.getCollider().isColliding()) {
+            entities.add(player);
+        } else {
+            //debug rect
+            Game.graphics.drawRect(player.getPosition(), player.getSize());
+            player.destruct();
+        }
     }
 
     public static void main(String[] args) {
