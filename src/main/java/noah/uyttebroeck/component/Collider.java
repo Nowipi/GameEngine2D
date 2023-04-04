@@ -9,12 +9,11 @@ import noah.uyttebroeck.util.Vec2F;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Collider extends Component {
-    private Vec2F size;
+public abstract class Collider extends Component {
 
-    private boolean colliding = false;
+    protected boolean colliding = false;
 
-    private OnCollision onCollision = new OnCollision() {
+    protected OnCollision onCollision = new OnCollision() {
         @Override
         public void collisionEntered(Collider other) {
 
@@ -26,9 +25,11 @@ public class Collider extends Component {
         }
     };
 
-    public Collider(Vec2F size, Entity parent) {
+    public Collider(Entity parent) {
         super(new ComponentBuilder(parent));
-        this.size = size;
+    }
+
+    protected void init() {
         CollisionSolver.getInstance().addCollider(this);
     }
 
@@ -64,17 +65,11 @@ public class Collider extends Component {
         return parent.getPosition();
     }
 
-    public final Vec2F getSize() {
-        return size;
-    }
-
-    public final void setSize(Vec2F size) {
-        this.size = size;
-    }
-
     public boolean isColliding() {
         return colliding;
     }
+
+    public abstract float getHalf();
 
     @Override
     public void destruct() {

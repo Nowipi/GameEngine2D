@@ -13,4 +13,5 @@ public interface Graphics {
 
     void render();
 
+    void drawCircle(Vec2<Float> position, float radius);
 }

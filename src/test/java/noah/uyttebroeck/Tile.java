@@ -1,9 +1,9 @@
 package noah.uyttebroeck;
 
+import noah.uyttebroeck.component.BoxCollider;
 import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
-import noah.uyttebroeck.graphics.Graphics;
 import noah.uyttebroeck.util.Vec2F;
 
 public class Tile extends Entity {
@@ -17,7 +17,7 @@ public class Tile extends Entity {
         sprite = new Sprite("textures/tile.png", 32, 32, this);
         components.add(sprite);
         setSize(sprite.getSize());
-        collider = new Collider(size, this);
+        collider = new BoxCollider(size, this);
         components.add(collider);
     }
 

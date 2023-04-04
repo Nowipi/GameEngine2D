@@ -23,10 +23,17 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public class DefaultGraphics implements Graphics {
 
     private final Shader spriteShader;
-    private final Shader shapeShader;
+    private final Shader rectShader;
+
+    private final Shader circleShader;
     private final int quadVAO;
 
     private final Stack<GraphicsObject> objects = new Stack<>();
+
+    public static void main(String[] args) {
+        Matrix4f projection = new Matrix4f().ortho(0.0f, 1024, 512, 0.0f, -1.0f, 1.0f);
+        projection.invert();
+    }
 
     public DefaultGraphics(Window window) {
 
@@ -35,9 +42,14 @@ public class DefaultGraphics implements Graphics {
         Matrix4f projection = new Matrix4f().ortho(0.0f, window.getWidth(), window.getHeight(), 0.0f, -1.0f, 1.0f);
         spriteShader.setMatrix4f("projection", projection);
         spriteShader.setInteger("image", 0);
-        shapeShader = new Shader("shaders/shape.vert", "shaders/shape.frag");
-        shapeShader.bind();
-        shapeShader.setMatrix4f("projection", projection);
+
+        rectShader = new Shader("shaders/shape.vert", "shaders/rect.frag");
+        rectShader.bind();
+        rectShader.setMatrix4f("projection", projection);
+
+        circleShader = new Shader("shaders/sprite.vert", "shaders/circle.frag");
+        circleShader.bind();
+        circleShader.setMatrix4f("projection", projection);
 
         int VBO;
         float[] vertices = {
@@ -72,11 +84,10 @@ public class DefaultGraphics implements Graphics {
     @Override
     public void drawRect(Vec2<Float> position, Vec2<Float> size) {
 
-        objects.add(new GraphicsObject(shapeShader) {
+        objects.add(new GraphicsObject(rectShader) {
             @Override
             public void shaderStuff(Shader shader) {
-                Matrix4f model = new Matrix4f();
-                model
+                Matrix4f model = new Matrix4f()
                         .translate(position.x, position.y, 0)
                         .scale(size.x, size.y, 1);
 
@@ -120,5 +131,21 @@ public class DefaultGraphics implements Graphics {
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glBindVertexArray(0);
         }
+    }
+
+    @Override
+    public void drawCircle(Vec2<Float> position, float radius) {
+        objects.add(new GraphicsObject(circleShader) {
+            @Override
+            public void shaderStuff(Shader shader) {
+                Matrix4f model = new Matrix4f()
+                        .translate(position.x, position.y, 0)
+                        .scale(radius, radius, 1);
+
+                shader.setMatrix4f("model", model);
+                shader.setVector3f("shapeColor", new Vector3f(1,0,0));
+                spriteShader.setFloat("radius", radius);
+            }
+        });
     }
 }

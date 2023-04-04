@@ -1,5 +1,7 @@
 package noah.uyttebroeck.collision;
 
+import noah.uyttebroeck.component.BoxCollider;
+import noah.uyttebroeck.component.CircleCollider;
 import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.util.QuadTree;
 import noah.uyttebroeck.util.Rectangle;
@@ -17,7 +19,12 @@ public class ColliderQuadTree extends QuadTree<Collider> {
 
     @Override
     public Vec2F getSize(Collider element) {
-        return element.getSize();
+        if (element instanceof BoxCollider b) {
+            return b.getSize();
+        }
+
+        float r = ((CircleCollider) element).getRadius();
+        return new Vec2F(r);
     }
 
 

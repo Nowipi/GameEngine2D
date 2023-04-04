@@ -1,5 +1,7 @@
 package noah.uyttebroeck.collision;
 
+import noah.uyttebroeck.component.BoxCollider;
+import noah.uyttebroeck.component.CircleCollider;
 import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.util.QuadTree;
 import noah.uyttebroeck.util.Rectangle;
@@ -49,7 +51,7 @@ public class CollisionSolver {
             Vec2F additional = new Vec2F(add);
             Rectangle range = new Rectangle(
                     VectorMath.sub(pc.getPosition(), additional),
-                    VectorMath.add(pc.getSize(), VectorMath.scalarMultiply(additional, 2)));
+                    new Vec2F(pc.getHalf() + additional.x, pc.getHalf() + additional.y));
 
             ArrayList<Collider> collided = new ArrayList<>();
             ArrayList<Collider> results = quadTree.query(range);
@@ -65,6 +67,43 @@ public class CollisionSolver {
     }
 
     private boolean collides(Collider pc, Collider c) {
+        if (pc instanceof CircleCollider pcc) {
+            if (c instanceof CircleCollider cc) {
+                return collides(pcc, cc);
+            } else {
+                return collides(pcc, (BoxCollider) c);
+            }
+        } else {
+            if (c instanceof CircleCollider cc) {
+                return collides(cc, (BoxCollider) pc);
+            } else {
+                return collides((BoxCollider) pc, (BoxCollider) c);
+            }
+        }
+    }
+
+    private boolean collides(CircleCollider c, BoxCollider b) {
+        // temporary variables to set edges for testing
+        Vec2F test = c.getPosition();
+
+        // which edge is closest?
+        if (c.getPosition().x < b.getPosition().x)                      test.x = b.getPosition().x;                 // test left edge
+        else if (c.getPosition().x > b.getPosition().x + b.getSize().x) test.x = b.getPosition().x + b.getSize().x; // right edge
+        if (c.getPosition().y < b.getPosition().y)                      test.y = b.getPosition().y;                 // top edge
+        else if (c.getPosition().y > b.getPosition().y + b.getSize().y) test.y = b.getPosition().y + b.getSize().y; // bottom edge
+
+        // get distance from the closest edges
+        float distance = VectorMath.distance(VectorMath.sub(c.getPosition(), test));
+
+        return distance <= c.getRadius();
+    }
+
+    private boolean collides(CircleCollider pc, CircleCollider c) {
+        Vec2F dPos = VectorMath.sub(pc.getPosition(), c.getPosition());
+        return VectorMath.distance(dPos) <= pc.getRadius() + c.getRadius();
+    }
+
+    private boolean collides(BoxCollider pc, BoxCollider c) {
         float r1x = pc.getPosition().x;
         float r1y = pc.getPosition().y;
         float r1w = pc.getSize().x;

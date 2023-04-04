@@ -1,6 +1,7 @@
 package noah.uyttebroeck;
 
 import noah.uyttebroeck.collision.OnCollision;
+import noah.uyttebroeck.component.BoxCollider;
 import noah.uyttebroeck.component.Collider;
 import noah.uyttebroeck.component.Sprite;
 import noah.uyttebroeck.entity.Entity;
@@ -10,7 +11,7 @@ import noah.uyttebroeck.util.VectorMath;
 public class Player extends Entity {
 
     private final Sprite sprite;
-    private final Collider collider;
+    private final BoxCollider collider;
     private Vec2F velocity = new Vec2F(100, 20);
 
 
@@ -20,7 +21,7 @@ public class Player extends Entity {
         components.add(sprite);
         setSize(sprite.getSize());
 
-        collider = new Collider(size, this);
+        collider = new BoxCollider(size, this);
 
 
         collider.setOnCollision(new OnCollision() {

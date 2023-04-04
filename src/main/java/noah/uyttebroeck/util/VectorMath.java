@@ -6,6 +6,10 @@ public class VectorMath {
         return new Vec2F(a.x + b.x, a.y + b.y);
     }
 
+    public static Vec2F add(Vec2F a, float b) {
+        return new Vec2F(a.x + b, a.y + b);
+    }
+
     public static Vec2F sub(Vec2F a, Vec2F b) {
         return new Vec2F(a.x - b.x, a.y - b.y);
     }
@@ -42,4 +46,7 @@ public class VectorMath {
         return newVec;
     }
 
+    public static float distance(Vec2F v) {
+        return (float) Math.sqrt(v.x * v.x + v.y * v.y);
+    }
 }
