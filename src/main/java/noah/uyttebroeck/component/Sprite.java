@@ -15,10 +15,10 @@ public class Sprite extends Component {
     private final int width;
     private final int height;
 
-    public Sprite(String imageName, int width, int height, Entity parent) {
+    public Sprite(String imageName, Vec2F size, Entity parent) {
         super(new ComponentBuilder(parent).ticks(true));
-        this.width = width;
-        this.height = height;
+        this.width = size.x.intValue();
+        this.height = size.y.intValue();
         texture = ResourceUtils.getTextureFromFile(imageName);
     }
 

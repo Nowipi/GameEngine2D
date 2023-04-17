@@ -3,16 +3,16 @@
 in vec2 TexCoords;
 
 uniform vec3 shapeColor;
-uniform float radius;
 
-float circle(float radius, vec2 position) {
-    return step(radius, distance(position, vec2(0.5)));
+float circle(in vec2 _st, in float _radius){
+    vec2 dist = _st-vec2(0.5);
+    return 1.-smoothstep(_radius-(_radius*0.01),
+    _radius+(_radius*0.01),
+    dot(dist,dist)*4.0);
 }
 
 void main() {
 
-    float circle = circle(radius, TexCoords);
-    if(circle == 0.) {
-        gl_FragColor = vec4(shapeColor, 1.0);
-    }
+    float circle = circle(TexCoords, 1.0);
+    gl_FragColor = vec4(shapeColor, circle);
 }

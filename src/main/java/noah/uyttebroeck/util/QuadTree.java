@@ -1,6 +1,7 @@
 package noah.uyttebroeck.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class QuadTree <E> {
 
@@ -11,7 +12,7 @@ public abstract class QuadTree <E> {
     public final Rectangle boundary;
     private final int capacity;
     private final int depth;
-    private final ArrayList<E> elements = new ArrayList<>();
+    private final HashMap<E, Vec2F[]> elements = new HashMap<>();
     private boolean divided = false;
 
     public QuadTree<E> NE;
@@ -47,53 +48,33 @@ public abstract class QuadTree <E> {
     public void subdivide() {
         NE = new QuadTree<>(boundary.subdivide(Quadrant.NE), capacity, depth + 1) {
             @Override
-            public Vec2F getPosition(E element) {
-                return QuadTree.this.getPosition(element);
-            }
-
-            @Override
-            public Vec2F getSize(E element) {
-                return QuadTree.this.getSize(element);
+            protected Vec2F[] getPoints(E o) {
+                return QuadTree.this.getPoints(o);
             }
         };
         NW = new QuadTree<>(boundary.subdivide(Quadrant.NW), capacity, depth + 1) {
             @Override
-            public Vec2F getPosition(E element) {
-                return QuadTree.this.getPosition(element);
-            }
-
-            @Override
-            public Vec2F getSize(E element) {
-                return QuadTree.this.getSize(element);
+            protected Vec2F[] getPoints(E o) {
+                return QuadTree.this.getPoints(o);
             }
         };
         SE = new QuadTree<>(boundary.subdivide(Quadrant.SE), capacity, depth + 1) {
             @Override
-            public Vec2F getPosition(E element) {
-                return QuadTree.this.getPosition(element);
-            }
-
-            @Override
-            public Vec2F getSize(E element) {
-                return QuadTree.this.getSize(element);
+            protected Vec2F[] getPoints(E o) {
+                return QuadTree.this.getPoints(o);
             }
         };
         SW = new QuadTree<>(boundary.subdivide(Quadrant.SW), capacity, depth + 1) {
             @Override
-            public Vec2F getPosition(E element) {
-                return QuadTree.this.getPosition(element);
-            }
-
-            @Override
-            public Vec2F getSize(E element) {
-                return QuadTree.this.getSize(element);
+            protected Vec2F[] getPoints(E o) {
+                return QuadTree.this.getPoints(o);
             }
         };
 
         divided = true;
 
         //insert old elements
-        for (E e : elements) {
+        for (E e : elements.keySet()) {
             boolean inserted =
                     NE.insert(e) ||
                     NW.insert(e) ||
@@ -101,7 +82,7 @@ public abstract class QuadTree <E> {
                     SW.insert(e);
 
             if (!inserted) {
-                throw new RuntimeException("capacity must be greater than 0");
+                throw new RuntimeException("capacity must be greater than 0 ");
             }
         }
 
@@ -110,13 +91,24 @@ public abstract class QuadTree <E> {
     }
 
     public boolean insert(E e) {
-        if (!boundary.intersects(new Rectangle(getPosition(e), getSize(e)))) {
+        boolean r = true;
+        Vec2F[] points = getPoints(e);
+        elements.put(e, points);
+        for (Vec2F v : points) {
+            r &= insert(v);
+        }
+        if (!r)
+            elements.remove(e);
+        return r;
+    }
+
+    private boolean insert(Vec2F e) {
+        if (!boundary.contains(e)) {
             return false;
         }
 
         if (!divided) {
             if (elements.size() < capacity || depth == MAX_DEPTH) {
-                elements.add(e);
                 return true;
             }
 
@@ -145,9 +137,11 @@ public abstract class QuadTree <E> {
             return found;
         }
 
-        for (E e : elements) {
-            if (range.intersects(new Rectangle(getPosition(e), getSize(e)))) {
-                found.add(e);
+        for (E e : elements.keySet()) {
+            for (Vec2F v : elements.get(e)) {
+                if (range.contains(v)) {
+                    found.add(e);
+                }
             }
         }
 
@@ -155,7 +149,7 @@ public abstract class QuadTree <E> {
     }
 
     public ArrayList<E> getElements() {
-        ArrayList<E> elements = this.elements;
+        ArrayList<E> elements = new ArrayList<>(this.elements.keySet());
         if (isDivided()) {
             elements.addAll(NE.getElements());
             elements.addAll(NW.getElements());
@@ -169,6 +163,5 @@ public abstract class QuadTree <E> {
         return divided;
     }
 
-    public abstract Vec2F getPosition(E element);
-    public abstract Vec2F getSize(E element);
+    protected abstract Vec2F[] getPoints(E e);
 }

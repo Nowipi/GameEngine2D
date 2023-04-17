@@ -8,7 +8,8 @@ import noah.uyttebroeck.util.Vec2F;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -28,7 +29,7 @@ public class DefaultGraphics implements Graphics {
     private final Shader circleShader;
     private final int quadVAO;
 
-    private final Stack<GraphicsObject> objects = new Stack<>();
+    private final Queue<GraphicsObject> objects = new LinkedList<>();
 
     public static void main(String[] args) {
         Matrix4f projection = new Matrix4f().ortho(0.0f, 1024, 512, 0.0f, -1.0f, 1.0f);
@@ -98,6 +99,21 @@ public class DefaultGraphics implements Graphics {
     }
 
     @Override
+    public void drawCircle(Vec2<Float> position, Vec2<Float> size, int r, int g, int b) {
+        objects.add(new GraphicsObject(circleShader) {
+            @Override
+            public void shaderStuff(Shader shader) {
+                Matrix4f model = new Matrix4f()
+                        .translate(position.x - size.x/2, position.y - size.y/2, 0)
+                        .scale(size.x, size.y, 1);
+
+                shader.setMatrix4f("model", model);
+                shader.setVector3f("shapeColor", new Vector3f(r/255F,g/255F,b/255F));
+            }
+        });
+    }
+
+    @Override
     public void drawSprite(Sprite sprite) {
         objects.add(new GraphicsObject(spriteShader) {
             @Override
@@ -125,27 +141,11 @@ public class DefaultGraphics implements Graphics {
     public void render() {
 
         while (!objects.isEmpty()) {
-            objects.pop().render();
+            objects.poll().render();
 
             glBindVertexArray(quadVAO);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glBindVertexArray(0);
         }
-    }
-
-    @Override
-    public void drawCircle(Vec2<Float> position, float radius) {
-        objects.add(new GraphicsObject(circleShader) {
-            @Override
-            public void shaderStuff(Shader shader) {
-                Matrix4f model = new Matrix4f()
-                        .translate(position.x, position.y, 0)
-                        .scale(radius, radius, 1);
-
-                shader.setMatrix4f("model", model);
-                shader.setVector3f("shapeColor", new Vector3f(1,0,0));
-                spriteShader.setFloat("radius", radius);
-            }
-        });
     }
 }

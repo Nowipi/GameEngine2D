@@ -9,6 +9,10 @@ public class Vec2F extends Vec2<Float> {
         super(v, v);
     }
 
+    public Vec2F(Vec2F v) {
+        super(v.x, v.y);
+    }
+
     public Vec2F() {
         this(0,0);
     }

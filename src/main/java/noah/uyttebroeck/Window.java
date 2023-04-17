@@ -1,10 +1,7 @@
 package noah.uyttebroeck;
 
 import org.lwjgl.Version;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
@@ -21,6 +18,39 @@ public abstract class Window {
     private final long window;
     protected int width;
     protected int height;
+
+    protected MouseListener mouseListener = new MouseListener() {
+        @Override
+        public void mousePressed(int x, int y, int button) {
+
+        }
+
+        @Override
+        public void mouseReleased(int x, int y, int button) {
+
+        }
+
+        @Override
+        public void mouseMove(int x, int y) {
+
+        }
+    };
+    protected KeyListener keyListener = new KeyListener() {
+        @Override
+        public void keyPressed(int key) {
+
+        }
+
+        @Override
+        public void keyReleased(int key) {
+
+        }
+
+        @Override
+        public void holdKey() {
+
+        }
+    };
 
     public Window(String title, int width, int height) {
 
@@ -61,6 +91,7 @@ public abstract class Window {
             public void invoke(long window, int width, int height) {
                 Window.this.width = width;
                 Window.this.height = height;
+                glViewport(0,0,width,height);
             }
         });
 
@@ -70,8 +101,29 @@ public abstract class Window {
                 double[] x = new double[1];
                 double[] y = new double[1];
                 glfwGetCursorPos(window, x, y);
-                if (action == GLFW_RELEASE)
-                    click((int) x[0], (int) y[0]);
+                if (action == GLFW_RELEASE) {
+                    mouseListener.mouseReleased((int) x[0], (int) y[0], button);
+                } else if (action == GLFW_PRESS) {
+                    mouseListener.mousePressed((int) x[0], (int) y[0], button);
+                }
+            }
+        });
+
+        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback() {
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                mouseListener.mouseMove((int) xpos, (int) ypos);
+            }
+        });
+
+        glfwSetKeyCallback(window, new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if (action == GLFW_RELEASE) {
+                    keyListener.keyReleased(key);
+                } else if (action == GLFW_PRESS) {
+                    keyListener.keyPressed(key);
+                }
             }
         });
 
@@ -136,6 +188,8 @@ public abstract class Window {
             lastTime = currentTime;
             glfwPollEvents();
 
+            keyListener.holdKey();
+
             onUpdate(delta);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
@@ -150,7 +204,6 @@ public abstract class Window {
     protected abstract void onInit();
     protected abstract void onUpdate(double delta);
     protected abstract void onRender();
-    protected abstract void click(int x, int y);
 
     public int getWidth() {
         return width;

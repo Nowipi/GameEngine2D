@@ -19,6 +19,7 @@ public abstract class Game extends Window {
 
     protected Game(String title, int width, int height) {
         super(title, width, height);
+        entities = new ArrayList<>();
     }
 
     public boolean isSpawned(Entity parent) {
@@ -38,8 +39,13 @@ public abstract class Game extends Window {
 
         glClearColor(0, 1.0f, 0, 0.0f);
 
-        for (Entity e : entities) {
+        for (int i = 0; i < entities.size(); i++) {
+            Entity e = entities.get(i);
             e.update(delta);
+            if (e.isDestructed()) {
+                entities.remove(e);
+                i--;
+            }
         }
         CollisionSolver.getInstance().update();
     }

@@ -19,7 +19,7 @@ public class Rectangle {
         bottom  = this.position.y + this.size.y;
     }
 
-    public boolean contains(Vec2F point, Vec2F size) {
+    public boolean contains(Vec2F point) {
 
         return point.x >= left && point.x <= right &&
                 point.y >= top && point.y <= bottom;

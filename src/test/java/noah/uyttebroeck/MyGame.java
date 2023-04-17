@@ -1,16 +1,20 @@
 package noah.uyttebroeck;
 
 import noah.uyttebroeck.util.Vec2F;
+import noah.uyttebroeck.util.VectorMath;
+import org.joml.Vector3i;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class MyGame extends Game {
 
     private final Random random;
+    private Player player;
+    private Ball ball;
 
     protected MyGame() {
-        super("Testing", 1024, 512);
+        super("Testing", 2048, 1024);
+
         random = new Random();
     }
 
@@ -18,28 +22,34 @@ public class MyGame extends Game {
     protected void onInit() {
         super.onInit();
 
-        entities = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            entities.add(new Tile(new Vec2F(random.nextInt(width), random.nextInt(height))));
-        }
+        player = new Player(new Vec2F(width/2F-64, height-32));
+        entities.add(player);
 
-        int borderSize = 10;
-        entities.add(new Border(new Vec2F(-borderSize, 0), new Vec2F(borderSize, height))); //top left (left border)
-        entities.add(new Border(new Vec2F(width, 0), new Vec2F(borderSize, height))); //top right (right border)
-        entities.add(new Border(new Vec2F(0, -borderSize), new Vec2F(width, borderSize))); //top left (top border)
-        entities.add(new Border(new Vec2F(0, height), new Vec2F(width, borderSize))); //bottom left (bottom border)
+        ball = new Ball(VectorMath.add(player.getPosition(), new Vec2F(player.getSize().x/2, -8)), new Vec2F(16, 16), new Vector3i(255, 0, 0));
+        entities.add(ball);
+
+        keyListener = new MyKeyListener(this);
+
+        for (int i = 0; i < 20; i++) {
+            entities.add(new Tile(new Vec2F(i*(64 + 10), 250)));
+        }
     }
 
-    @Override
-    protected void click(int x, int y) {
-        Ball player = new Ball(new Vec2F(x, y), new Vec2F(64, 64));
-        if (!player.getCollider().isColliding()) {
-            entities.add(player);
-        } else {
-            //debug rect
-            Game.graphics.drawCircle(player.getPosition(), player.getSize().x);
-            player.destruct();
-        }
+    public void restart() {
+
+        player.getPhysicsComponent().velocity = new Vec2F();
+        player.setPosition(new Vec2F(width/2F-64, height-32));
+
+        ball.reset();
+        ball.setPosition(VectorMath.add(player.getPosition(), new Vec2F(player.getSize().x/2, -8)));
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Ball getBall() {
+        return ball;
     }
 
     public static void main(String[] args) {

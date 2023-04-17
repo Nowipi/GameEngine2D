@@ -13,5 +13,5 @@ public interface Graphics {
 
     void render();
 
-    void drawCircle(Vec2<Float> position, float radius);
+    void drawCircle(Vec2<Float> position, Vec2<Float> size, int r, int g, int b);
 }

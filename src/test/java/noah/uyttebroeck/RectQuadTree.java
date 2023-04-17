@@ -3,6 +3,7 @@ package noah.uyttebroeck;
 import noah.uyttebroeck.util.QuadTree;
 import noah.uyttebroeck.util.Rectangle;
 import noah.uyttebroeck.util.Vec2F;
+import noah.uyttebroeck.util.VectorMath;
 
 public class RectQuadTree extends QuadTree<Rectangle> {
     public RectQuadTree(Rectangle boundary) {
@@ -10,12 +11,12 @@ public class RectQuadTree extends QuadTree<Rectangle> {
     }
 
     @Override
-    public Vec2F getPosition(Rectangle element) {
-        return element.position;
-    }
-
-    @Override
-    public Vec2F getSize(Rectangle element) {
-        return element.size;
+    protected Vec2F[] getPoints(Rectangle rectangle) {
+        return new Vec2F[] {
+                rectangle.position,
+                new Vec2F(rectangle.position.x + rectangle.size.x, rectangle.position.y),
+                VectorMath.add(rectangle.position, rectangle.size),
+                new Vec2F(rectangle.position.x, rectangle.position.y + rectangle.size.y)
+        };
     }
 }

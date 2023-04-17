@@ -13,6 +13,8 @@ public abstract class Collider extends Component {
 
     protected boolean colliding = false;
 
+    protected Vec2F size;
+
     protected OnCollision onCollision = new OnCollision() {
         @Override
         public void collisionEntered(Collider other) {
@@ -25,8 +27,9 @@ public abstract class Collider extends Component {
         }
     };
 
-    public Collider(Entity parent) {
+    public Collider(Vec2F size, Entity parent) {
         super(new ComponentBuilder(parent));
+        this.size = size;
     }
 
     protected void init() {
@@ -65,11 +68,13 @@ public abstract class Collider extends Component {
         return parent.getPosition();
     }
 
+    public Vec2F getSize() {
+        return size;
+    }
+
     public boolean isColliding() {
         return colliding;
     }
-
-    public abstract float getHalf();
 
     @Override
     public void destruct() {

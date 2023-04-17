@@ -3,7 +3,6 @@ package noah.uyttebroeck.collision;
 import noah.uyttebroeck.component.BoxCollider;
 import noah.uyttebroeck.component.CircleCollider;
 import noah.uyttebroeck.component.Collider;
-import noah.uyttebroeck.util.QuadTree;
 import noah.uyttebroeck.util.Rectangle;
 import noah.uyttebroeck.util.Vec2F;
 import noah.uyttebroeck.util.VectorMath;
@@ -23,7 +22,7 @@ public class CollisionSolver {
         INSTANCE = new CollisionSolver(width, height);
     }
 
-    private QuadTree<Collider> quadTree;
+    private ColliderQuadTree quadTree;
     private final ArrayList<Collider> colliders = new ArrayList<>();
 
     private CollisionSolver(int width, int height) {
@@ -32,7 +31,10 @@ public class CollisionSolver {
 
     public void addCollider(Collider collider) {
         colliders.add(collider);
-        quadTree.insert(collider);
+        if (collider instanceof BoxCollider b)
+            quadTree.insert(b);
+        else if (collider instanceof CircleCollider c)
+            quadTree.insert(c);
         update();
     }
 
@@ -41,17 +43,21 @@ public class CollisionSolver {
         quadTree = new ColliderQuadTree(quadTree.boundary);
 
         for (Collider pc : colliders) {
-            quadTree.insert(pc);
+            if (pc instanceof BoxCollider b)
+                quadTree.insert(b);
+            else if (pc instanceof CircleCollider c)
+                quadTree.insert(c);
         }
 
+        for (int i = 0; i < colliders.size(); i++) {
 
-        for (Collider pc : colliders) {
+            Collider pc = colliders.get(i);
 
             float add = 50;
             Vec2F additional = new Vec2F(add);
             Rectangle range = new Rectangle(
                     VectorMath.sub(pc.getPosition(), additional),
-                    new Vec2F(pc.getHalf() + additional.x, pc.getHalf() + additional.y));
+                    new Vec2F(pc.getSize().x/2 + additional.x, pc.getSize().y/2 + additional.y));
 
             ArrayList<Collider> collided = new ArrayList<>();
             ArrayList<Collider> results = quadTree.query(range);
@@ -61,8 +67,10 @@ public class CollisionSolver {
                 }
             }
 
+            int size = colliders.size();
             pc.collision(collided);
-
+            if (size > colliders.size())
+                i--;
         }
     }
 
@@ -84,7 +92,7 @@ public class CollisionSolver {
 
     private boolean collides(CircleCollider c, BoxCollider b) {
         // temporary variables to set edges for testing
-        Vec2F test = c.getPosition();
+        Vec2F test = new Vec2F(c.getPosition());
 
         // which edge is closest?
         if (c.getPosition().x < b.getPosition().x)                      test.x = b.getPosition().x;                 // test left edge
