@@ -26,7 +26,7 @@ public class CollisionSolver {
     private final ArrayList<Collider> colliders = new ArrayList<>();
 
     private CollisionSolver(int width, int height) {
-        quadTree = new ColliderQuadTree(new Rectangle(new Vec2F(0,0), new Vec2F(width, height)));
+        quadTree = new ColliderQuadTree(new Rectangle(new Vec2F(-1000,-1000), new Vec2F(width+2000, height+2000)), 10);
     }
 
     public void addCollider(Collider collider) {
@@ -40,7 +40,7 @@ public class CollisionSolver {
 
     public void update() {
 
-        quadTree = new ColliderQuadTree(quadTree.boundary);
+        quadTree = new ColliderQuadTree(quadTree.boundary, 10);
 
         for (Collider pc : colliders) {
             if (pc instanceof BoxCollider b)

@@ -29,23 +29,27 @@ public class Ball extends Entity {
             @Override
             public void collisionEntered(Collider other) {
 
-                Vec2F nPosition = VectorMath.normalize(position);
-                float xDot = VectorMath.dot(nPosition, new Vec2F(1, 0));
-                if (xDot < 0) {
-                    physicsComponent.velocity.x = -physicsComponent.velocity.x;
-                }
-                float yDot = VectorMath.dot(nPosition, new Vec2F(0, -1));
-                if (yDot < 0) {
-                    physicsComponent.velocity.y = -physicsComponent.velocity.y;
-                }
+                if (!stuck) {
 
-                if (other.getParent() instanceof Tile tile) {
-                    tile.destruct();
-                } else if (other.getParent() instanceof Player player) {
-                    xDot = VectorMath.dot(nPosition, VectorMath.normalize(player.getPhysicsComponent().velocity));
+                    Vec2F nPosition = VectorMath.normalize(position);
+                    float xDot = VectorMath.dot(nPosition, new Vec2F(-1, 0));
                     if (xDot < 0) {
                         physicsComponent.velocity.x = -physicsComponent.velocity.x;
                     }
+                    float yDot = VectorMath.dot(nPosition, new Vec2F(0, -1));
+                    if (yDot < 0) {
+                        physicsComponent.velocity.y = -physicsComponent.velocity.y;
+                    }
+
+                    if (other.getParent() instanceof Tile tile) {
+                        tile.destruct();
+                    } else if (other.getParent() instanceof Player player) {
+                        xDot = VectorMath.dot(nPosition, VectorMath.normalize(player.getPhysicsComponent().velocity));
+                        if (xDot < 0) {
+                            physicsComponent.velocity.x = -physicsComponent.velocity.x;
+                        }
+                    }
+
                 }
 
             }

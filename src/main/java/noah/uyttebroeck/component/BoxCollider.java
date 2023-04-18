@@ -6,7 +6,11 @@ import noah.uyttebroeck.util.Vec2F;
 public class BoxCollider extends Collider {
 
     public BoxCollider(Vec2F size, Entity parent) {
-        super(size, parent);
+        this(size, true, parent);
+    }
+
+    public BoxCollider(Vec2F size, boolean hits, Entity parent) {
+        super(size, hits, parent);
         this.size = size;
         init();
     }

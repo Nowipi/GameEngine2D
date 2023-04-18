@@ -23,7 +23,7 @@ public class Player extends Entity {
         physicsComponent = new Physics(this);
         components.add(physicsComponent);
 
-        collider = new BoxCollider(size, this);
+        collider = new BoxCollider(size, false,this);
         components.add(collider);
     }
 

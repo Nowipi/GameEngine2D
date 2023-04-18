@@ -8,7 +8,7 @@ public class CircleCollider extends Collider{
     protected float radius;
 
     public CircleCollider(float radius, Entity parent) {
-        super(new Vec2F(radius*2), parent);
+        super(new Vec2F(radius*2), true, parent);
         this.radius = radius;
         init();
     }

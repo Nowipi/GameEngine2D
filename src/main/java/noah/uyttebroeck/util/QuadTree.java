@@ -1,6 +1,7 @@
 package noah.uyttebroeck.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public abstract class QuadTree <E> {
@@ -12,7 +13,7 @@ public abstract class QuadTree <E> {
     public final Rectangle boundary;
     private final int capacity;
     private final int depth;
-    private final HashMap<E, Vec2F[]> elements = new HashMap<>();
+    private final HashMap<Vec2F, E> elements = new HashMap<>();
     private boolean divided = false;
 
     public QuadTree<E> NE;
@@ -74,12 +75,12 @@ public abstract class QuadTree <E> {
         divided = true;
 
         //insert old elements
-        for (E e : elements.keySet()) {
+        for (Vec2F v : elements.keySet()) {
             boolean inserted =
-                    NE.insert(e) ||
-                    NW.insert(e) ||
-                    SE.insert(e) ||
-                    SW.insert(e);
+                    NE.insert(elements.get(v), v) ||
+                    NW.insert(elements.get(v), v) ||
+                    SE.insert(elements.get(v), v) ||
+                    SW.insert(elements.get(v), v);
 
             if (!inserted) {
                 throw new RuntimeException("capacity must be greater than 0 ");
@@ -90,32 +91,29 @@ public abstract class QuadTree <E> {
 
     }
 
-    public boolean insert(E e) {
-        boolean r = true;
+    public void insert(E e) {
         Vec2F[] points = getPoints(e);
-        elements.put(e, points);
         for (Vec2F v : points) {
-            r &= insert(v);
+            if (!insert(e, v))
+                elements.remove(v);
         }
-        if (!r)
-            elements.remove(e);
-        return r;
     }
 
-    private boolean insert(Vec2F e) {
-        if (!boundary.contains(e)) {
+    private boolean insert(E e, Vec2F p) {
+        if (!boundary.contains(p)) {
             return false;
         }
 
         if (!divided) {
             if (elements.size() < capacity || depth == MAX_DEPTH) {
+                elements.put(p, e);
                 return true;
             }
 
             subdivide();
         }
 
-        return NE.insert(e) || NW.insert(e) || SE.insert(e) || SW.insert(e);
+        return NE.insert(e, p) || NW.insert(e, p) || SE.insert(e, p) || SW.insert(e, p);
     }
 
 
@@ -137,19 +135,18 @@ public abstract class QuadTree <E> {
             return found;
         }
 
-        for (E e : elements.keySet()) {
-            for (Vec2F v : elements.get(e)) {
-                if (range.contains(v)) {
-                    found.add(e);
-                }
+        for (Vec2F v : elements.keySet()) {
+            if (range.contains(v)) {
+                found.add(elements.get(v));
+                break;
             }
         }
 
         return found;
     }
 
-    public ArrayList<E> getElements() {
-        ArrayList<E> elements = new ArrayList<>(this.elements.keySet());
+    public Collection<E> getElements() {
+        Collection<E> elements = this.elements.values();
         if (isDivided()) {
             elements.addAll(NE.getElements());
             elements.addAll(NW.getElements());

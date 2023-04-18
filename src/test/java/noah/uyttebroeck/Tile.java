@@ -12,7 +12,7 @@ public class Tile extends Entity {
         super(position, new Vec2F(64, 64));
 
         components.add(new Sprite("textures/tile.png", size, this));
-        components.add(new BoxCollider(size, this));
+        components.add(new BoxCollider(size, false, this));
     }
 
     @Override
