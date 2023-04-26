@@ -27,35 +27,26 @@ public class Ball extends Entity {
         collider = new CircleCollider(getRadius(), this);
         collider.setOnCollision(new OnCollision() {
             @Override
-            public void collisionEntered(Collider other) {
+            public void collisionEntered(Collider.HitResult hitResult) {
 
                 if (!stuck) {
 
-                    Vec2F nPosition = VectorMath.normalize(position);
-                    float xDot = VectorMath.dot(nPosition, new Vec2F(-1, 0));
-                    if (xDot < 0) {
-                        physicsComponent.velocity.x = -physicsComponent.velocity.x;
-                    }
-                    float yDot = VectorMath.dot(nPosition, new Vec2F(0, -1));
-                    if (yDot < 0) {
-                        physicsComponent.velocity.y = -physicsComponent.velocity.y;
-                    }
+                    Vec2F correction = VectorMath.sub(hitResult.hit(), Ball.this.position);
+                    correction = VectorMath.sub(correction, 0.1F);
+                    Ball.this.position = VectorMath.add(Ball.this.position, correction);
 
-                    if (other.getParent() instanceof Tile tile) {
-                        tile.destruct();
-                    } else if (other.getParent() instanceof Player player) {
-                        xDot = VectorMath.dot(nPosition, VectorMath.normalize(player.getPhysicsComponent().velocity));
-                        if (xDot < 0) {
-                            physicsComponent.velocity.x = -physicsComponent.velocity.x;
-                        }
-                    }
+                    if (hitResult.other().getParent() instanceof Tile t)
+                        t.destruct();
+
+                    float dot = VectorMath.dot(hitResult.hitNormal(), physicsComponent.velocity);
+                    physicsComponent.velocity = VectorMath.sub(physicsComponent.velocity, VectorMath.scalarMultiply(hitResult.hitNormal(), 2 * dot));
 
                 }
 
             }
 
             @Override
-            public void collisionExited(Collider other) {
+            public void collisionExited(Collider.HitResult hitResult) {
 
             }
         });

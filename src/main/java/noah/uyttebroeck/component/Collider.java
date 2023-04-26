@@ -18,12 +18,12 @@ public abstract class Collider extends Component {
 
     protected OnCollision onCollision = new OnCollision() {
         @Override
-        public void collisionEntered(Collider other) {
+        public void collisionEntered(HitResult result) {
 
         }
 
         @Override
-        public void collisionExited(Collider other) {
+        public void collisionExited(HitResult result) {
 
         }
     };
@@ -42,25 +42,25 @@ public abstract class Collider extends Component {
         this.onCollision = onCollision;
     }
 
-    private List<Collider> lastCollided = new ArrayList<>();
-    public final void collision(List<Collider> collided) {
+    private List<HitResult> lastCollided = new ArrayList<>();
+    public final void hit(List<HitResult> collided) {
         if (hits) {
-            System.out.println(parent);
-            for (Collider c : collided) {
-                System.out.println(c.getParent());
-                if (!lastCollided.contains(c)) {
-                    if (Game.getInstance().isSpawned(c.parent))
-                        onCollision.collisionEntered(c);
+            for (HitResult r : collided) {
+                if (!lastCollided.contains(r)) {
+                    if (Game.getInstance() == null || Game.getInstance().isSpawned(r.other.parent)) {
+                        onCollision.collisionEntered(r);
+                    }
                 } else {
-                    lastCollided.remove(c);
+                    lastCollided.remove(r);
                 }
             }
 
             for (int i = 0; i < lastCollided.size(); i++) {
-                Collider c = lastCollided.get(i);
-                if (Game.getInstance().isSpawned(c.parent))
-                    onCollision.collisionExited(c);
-                lastCollided.remove(c);
+                HitResult r = lastCollided.get(i);
+                if (Game.getInstance().isSpawned(r.other.parent)) {
+                    onCollision.collisionExited(r);
+                }
+                lastCollided.remove(r);
                 i--;
             }
 
@@ -68,6 +68,10 @@ public abstract class Collider extends Component {
 
             lastCollided = collided;
         }
+    }
+
+    public record HitResult(Collider other, Vec2F hitNormal, Vec2F hit) {
+
     }
 
     public final Vec2F getPosition() {

@@ -31,10 +31,10 @@ public class MyGame extends Game {
         keyListener = new MyKeyListener(this);
 
         int borderSize = 50;
-        entities.add(new Border(new Vec2F(), new Vec2F(width, -borderSize)));
-        entities.add(new Border(new Vec2F(width, 0), new Vec2F(borderSize, height)));
+        entities.add(new Border(new Vec2F(0, borderSize), new Vec2F(width, -borderSize)));
+        entities.add(new Border(new Vec2F(width-borderSize, borderSize), new Vec2F(borderSize, height)));
         entities.add(new Border(new Vec2F(0, height), new Vec2F(width, borderSize)));
-        entities.add(new Border(new Vec2F(-borderSize, 0), new Vec2F(borderSize, height)));
+        entities.add(new Border(new Vec2F(0, 0), new Vec2F(borderSize, height)));
 
         for (int i = 0; i < 20; i++) {
             entities.add(new Tile(new Vec2F(i*(64 + 10), 250)));

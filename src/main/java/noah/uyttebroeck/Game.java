@@ -37,7 +37,7 @@ public abstract class Game extends Window {
     @Override
     protected void onUpdate(double delta) {
 
-        glClearColor(0, 1.0f, 0, 0.0f);
+        glClearColor(0, 0, 0, 0.0f);
 
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);

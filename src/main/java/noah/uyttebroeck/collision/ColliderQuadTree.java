@@ -87,6 +87,10 @@ import java.util.ArrayList;
         return ps;
     }
 
+     public int getCellSize() {
+         return cellSize;
+     }
+
      public static void main(String[] args) {
          float[] t = new ColliderQuadTree(null, 15).values(10, 20);
          System.out.println(t.length);

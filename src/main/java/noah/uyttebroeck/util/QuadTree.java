@@ -137,7 +137,8 @@ public abstract class QuadTree <E> {
 
         for (Vec2F v : elements.keySet()) {
             if (range.contains(v)) {
-                found.add(elements.get(v));
+                if (!found.contains(elements.get(v)))
+                    found.add(elements.get(v));
                 break;
             }
         }

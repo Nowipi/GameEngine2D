@@ -13,10 +13,10 @@ public class RectQuadTree extends QuadTree<Rectangle> {
     @Override
     protected Vec2F[] getPoints(Rectangle rectangle) {
         return new Vec2F[] {
-                rectangle.position,
-                new Vec2F(rectangle.position.x + rectangle.size.x, rectangle.position.y),
-                VectorMath.add(rectangle.position, rectangle.size),
-                new Vec2F(rectangle.position.x, rectangle.position.y + rectangle.size.y)
+            rectangle.position,
+                    new Vec2F(rectangle.position.x + rectangle.size.x, rectangle.position.y),
+                    VectorMath.add(rectangle.position, rectangle.size),
+                    new Vec2F(rectangle.position.x, rectangle.position.y + rectangle.size.y)
         };
     }
 }

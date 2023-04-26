@@ -3,6 +3,7 @@ package noah.uyttebroeck.collision;
 import noah.uyttebroeck.component.BoxCollider;
 import noah.uyttebroeck.component.CircleCollider;
 import noah.uyttebroeck.component.Collider;
+import noah.uyttebroeck.entity.Entity;
 import noah.uyttebroeck.util.Rectangle;
 import noah.uyttebroeck.util.Vec2F;
 import noah.uyttebroeck.util.VectorMath;
@@ -53,65 +54,98 @@ public class CollisionSolver {
 
             Collider pc = colliders.get(i);
 
-            float add = 50;
+            float add = quadTree.getCellSize();
             Vec2F additional = new Vec2F(add);
             Rectangle range = new Rectangle(
                     VectorMath.sub(pc.getPosition(), additional),
                     new Vec2F(pc.getSize().x/2 + additional.x, pc.getSize().y/2 + additional.y));
 
-            ArrayList<Collider> collided = new ArrayList<>();
+            ArrayList<Collider.HitResult> hits = new ArrayList<>();
             ArrayList<Collider> results = quadTree.query(range);
             for (Collider c : results) {
-                if (pc != c && collides(pc, c)) {
-                    collided.add(c);
+                Collision collision = isColliding(pc, c);
+                if (pc != c && collision.collision) {
+                    hits.add(new Collider.HitResult(c, collision.normal, collision.hit));
                 }
             }
 
             int size = colliders.size();
-            pc.collision(collided);
+            pc.hit(hits);
             if (size > colliders.size())
                 i--;
         }
     }
 
-    private boolean collides(Collider pc, Collider c) {
+    private Collision isColliding(Collider pc, Collider c) {
         if (pc instanceof CircleCollider pcc) {
             if (c instanceof CircleCollider cc) {
-                return collides(pcc, cc);
+                return isColliding(pcc, cc);
             } else {
-                return collides(pcc, (BoxCollider) c);
+                return isColliding(pcc, (BoxCollider) c);
             }
         } else {
             if (c instanceof CircleCollider cc) {
-                return collides(cc, (BoxCollider) pc);
+                return isColliding(cc, (BoxCollider) pc);
             } else {
-                return collides((BoxCollider) pc, (BoxCollider) c);
+                return isColliding((BoxCollider) pc, (BoxCollider) c);
             }
         }
     }
 
-    private boolean collides(CircleCollider c, BoxCollider b) {
+    private Collision isColliding(CircleCollider c, BoxCollider b) {
         // temporary variables to set edges for testing
-        Vec2F test = new Vec2F(c.getPosition());
+        Vec2F hitEdge = new Vec2F(c.getPosition());
 
+        Vec2F normal = new Vec2F();
         // which edge is closest?
-        if (c.getPosition().x < b.getPosition().x)                      test.x = b.getPosition().x;                 // test left edge
-        else if (c.getPosition().x > b.getPosition().x + b.getSize().x) test.x = b.getPosition().x + b.getSize().x; // right edge
-        if (c.getPosition().y < b.getPosition().y)                      test.y = b.getPosition().y;                 // top edge
-        else if (c.getPosition().y > b.getPosition().y + b.getSize().y) test.y = b.getPosition().y + b.getSize().y; // bottom edge
+        if (c.getPosition().x < b.getPosition().x) {
+            hitEdge.x = b.getPosition().x;                 // test left edge
+            normal.x = -1F;
+        } else if (c.getPosition().x > b.getPosition().x + b.getSize().x) {
+            hitEdge.x = b.getPosition().x + b.getSize().x; // right edge
+            normal.x = 1F;
+        }
+        if (c.getPosition().y < b.getPosition().y) {
+            hitEdge.y = b.getPosition().y;                 // top edge
+            if (normal.x == 0)
+                normal.y = -1F;
+        } else if (c.getPosition().y > b.getPosition().y + b.getSize().y) {
+            hitEdge.y = b.getPosition().y + b.getSize().y; // bottom edge
+            if (normal.x == 0)
+                normal.y = -1F;
+        }
 
         // get distance from the closest edges
-        float distance = VectorMath.distance(VectorMath.sub(c.getPosition(), test));
+        float distance = VectorMath.distance(VectorMath.sub(c.getPosition(), hitEdge));
 
-        return distance <= c.getRadius();
+        return new Collision(distance <= c.getRadius(), normal, hitEdge);
     }
 
-    private boolean collides(CircleCollider pc, CircleCollider c) {
+    public static void main(String[] args) {
+
+        CollisionSolver.initialize(1024, 512);
+        CollisionSolver.getInstance().isColliding(new CircleCollider(3, new Entity(new Vec2F(19, 22.5F), new Vec2F(3, 3)) {
+            @Override
+            public void onUpdate(double delta) {
+
+            }
+        }), new BoxCollider(new Vec2F(8, 5), new Entity(new Vec2F(new Vec2F(10, 20)), new Vec2F(8, 5)) {
+            @Override
+            public void onUpdate(double delta) {
+
+            }
+        }));
+    }
+
+    private Collision isColliding(CircleCollider pc, CircleCollider c) {
         Vec2F dPos = VectorMath.sub(pc.getPosition(), c.getPosition());
-        return VectorMath.distance(dPos) <= pc.getRadius() + c.getRadius();
+        //Vec2F hit = VectorMath.add(VectorMath.negate(dPos), pc.getRadius() + c.getRadius()); //overlap vector
+        return new Collision(VectorMath.distance(dPos) <= pc.getRadius() + c.getRadius(), null, null);
     }
 
-    private boolean collides(BoxCollider pc, BoxCollider c) {
+    private record Collision(boolean collision, Vec2F normal, Vec2F hit) {}
+
+    private Collision isColliding(BoxCollider pc, BoxCollider c) {
         float r1x = pc.getPosition().x;
         float r1y = pc.getPosition().y;
         float r1w = pc.getSize().x;
@@ -121,10 +155,10 @@ public class CollisionSolver {
         float r2w = c.getSize().x;
         float r2h = c.getSize().y;
 
-        return r1x + r1w >= r2x &&
+        return new Collision(r1x + r1w >= r2x &&
                 r1x <= r2x + r2w &&
                 r1y + r1h >= r2y &&
-                r1y <= r2y + r2h;
+                r1y <= r2y + r2h, null, null);
 
     }
 

@@ -68,4 +68,8 @@ public class VectorMath {
         float length = distance(v);
         return new Vec2F(v.x/length, v.y/length);
     }
+
+    public static Vec2F sub(Vec2F v, float s) {
+        return new Vec2F(v.x - s, v.y - s);
+    }
 }
